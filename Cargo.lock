@@ -2788,6 +2788,7 @@ dependencies = [
  "eframe",
  "egui_dock",
  "egui_extras",
+ "log",
  "wasm-bindgen-futures",
 ]
 

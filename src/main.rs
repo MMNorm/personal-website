@@ -116,22 +116,16 @@ impl Resume {
         Self {
             pages,
             viewer: PageViewer {
-                ctx: cc.egui_ctx.clone(),
                 requests: vec![],
                 highlight_page: Some(Page::Help),
-                highlight_id: egui::Id::new("page-highlighter"),
-                unhighlight_id: egui::Id::new("page-unhighlighter"),
             },
         }
     }
 }
 
 pub struct PageViewer {
-    ctx: egui::Context,
     requests: Vec<Request>,
     highlight_page: Option<Page>,
-    highlight_id: egui::Id,
-    unhighlight_id: egui::Id,
 }
 
 impl egui_dock::TabViewer for PageViewer {
