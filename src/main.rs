@@ -47,16 +47,17 @@ pub struct Resume {
 
 impl eframe::App for Resume {
     fn update(&mut self, ctx: &egui::Context, _: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("top-bar").exact_height(61.0).show(ctx, |ui| {
+        egui::TopBottomPanel::top("top-bar").exact_height(41.0).show(ctx, |ui| {
             ui.visuals_mut().button_frame = false;
+            ui.style_mut().spacing.item_spacing = egui::vec2(19.0, 3.0);
             ui.horizontal_centered(|ui| {
-                if ui.button("Home 🏠").clicked() {
+                if ui.button("Home").on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
                     self.viewer.requests.push(Request::OpenPage(Page::Home));
                 }
-                if ui.button("Help ？").clicked() {
+                if ui.button("Help").on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
                     self.viewer.requests.push(Request::OpenPage(Page::Help));
                 }
-                if ui.button("Contact 📞").clicked() {
+                if ui.button("Contact").on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
                     self.viewer.requests.push(Request::OpenPage(Page::Contact));
                 }
             });
