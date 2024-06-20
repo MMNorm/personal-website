@@ -223,11 +223,8 @@ fn home_page(ui: &mut egui::Ui, state: &mut State) {
                         tree_item(ui, state, Page::Skills, "Skills", 0);
                         tree_item(ui, state, Page::Experience, "Experience", 0);
                         tree_item(ui, state, Page::Portfolio, "Portfolio", 1);
-                        // tree_item(ui, state, Page::ProjectHarbor, "Project Harbor", 2);
-                        // tree_item(ui, state, Page::ProjectSwamp, "Project Swamp", 2);
                         tree_item(ui, state, Page::WorkHistory, "Work History", 1);
                         tree_item(ui, state, Page::WorkHistory, "IT Intern", 2);
-                        tree_item(ui, state, Page::WorkHistory, "System Analyst I", 2);
                         tree_item(ui, state, Page::Education, "Education", 0);
                         tree_item(ui, state, Page::Goals, "Goals", 0);
                         ui.add_space(19.0);
@@ -295,7 +292,7 @@ fn contact_page(ui: &mut egui::Ui, state: &mut State) {
                 // ui.label("📞 (850) 555-5555");
                 ui.horizontal_wrapped(|ui| {
                     ui.strong("Email:");
-                    ui.label("mm@email.com");
+                    ui.label("mmn23a@fsu.edu");
                 });
                 ui.hyperlink_to(" GitHub", "https://www.github.com/mmnorm");
                 ui.hyperlink_to(" LinkedIn", "https://www.linkedin.com/in/matthew-norman-67b10025a/");
