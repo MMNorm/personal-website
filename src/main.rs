@@ -525,21 +525,10 @@ fn education_page(ui: &mut egui::Ui, state: &mut State) {
 fn goals_page(ui: &mut egui::Ui, state: &mut State) {
     page_ui(ui, state, "goals",
             |ui, _state| {
-                ui.group(|ui| {
-                    ui.heading("Independence");
-                    ui.separator();
-                    ui.label("...");
-                });
-                ui.add_space(19.0);
-                ui.group(|ui| {
-                    ui.heading("Systems Analyst");
-                    ui.separator();
-                    ui.label("...");
-                });
                 ui.heading("Career Goals");
                 ui.label("My ultimate goal is independence. I know that may not be what a potential employer is looking for, but it's true. I'd like to eventually see myself working full time on my own projects with little to no oversight.");
                 ui.label("I'm also genuinely interested in learning. I'd say that I am extremely self-motivated and capable of gaining an in-depth understanding of anything I find interesting. And just about anything an employer looking for an IT guy needs is something I find interesting.");
-
+                ui.add_space(19.0);
                 ui.heading("Quick List");
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("◾");
