@@ -52,13 +52,13 @@ impl eframe::App for Resume {
             ui.style_mut().spacing.item_spacing = egui::vec2(19.0, 3.0);
             ui.horizontal_centered(|ui| {
                 if ui.button("Home").on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
-                    self.viewer.requests.push(Request::OpenPage(Page::Home));
+                    self.viewer.state.requests.push(Request::OpenPage(Page::Home));
                 }
                 if ui.button("Help").on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
-                    self.viewer.requests.push(Request::OpenPage(Page::Help));
+                    self.viewer.state.requests.push(Request::OpenPage(Page::Help));
                 }
                 if ui.button("Contact").on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
-                    self.viewer.requests.push(Request::OpenPage(Page::Contact));
+                    self.viewer.state.requests.push(Request::OpenPage(Page::Contact));
                 }
             });
         });
@@ -66,7 +66,7 @@ impl eframe::App for Resume {
             .style(egui_dock::Style::from_egui(ctx.style().as_ref()))
             .show(ctx, &mut self.viewer);
 
-        for req in self.viewer.requests.drain(..).collect::<Vec<_>>() {
+        for req in self.viewer.state.requests.drain(..).collect::<Vec<_>>() {
             match req {
                 Request::OpenPage(page) => {
                     if let Some(ids) = self.pages.find_tab(&page) {
@@ -118,15 +118,21 @@ impl Resume {
         Self {
             pages,
             viewer: PageViewer {
-                requests: vec![],
+                state: State {
+                    requests: vec![],
+                },
                 highlight_page: Some(Page::Help),
             },
         }
     }
 }
 
-pub struct PageViewer {
+pub struct State {
     requests: Vec<Request>,
+}
+
+pub struct PageViewer {
+    state: State,
     highlight_page: Option<Page>,
 }
 
@@ -138,7 +144,9 @@ impl egui_dock::TabViewer for PageViewer {
             Page::Home => "Home".into(),
             Page::Help => "Help".into(),
             Page::Contact => "Contact".into(),
+
             Page::Skills => "Skills".into(),
+            Page::Experience => "Experience".into(),
             Page::Portfolio => "Portfolio".into(),
             Page::Education => "Education".into(),
             Page::WorkHistory => "Work History".into(),
@@ -148,221 +156,386 @@ impl egui_dock::TabViewer for PageViewer {
     
     fn ui(&mut self, ui: &mut egui::Ui, tab: &mut Self::Tab) {
         match tab {
-            Page::Help => {
+            Page::Home => home_page(ui, &mut self.state),
+            Page::Help => help_page(ui, &mut self.state),
+            Page::Contact => contact_page(ui, &mut self.state),
+
+            Page::Skills => skills_page(ui, &mut self.state),
+            Page::Experience => experience_page(ui, &mut self.state),
+            Page::Education => education_page(ui, &mut self.state),
+            Page::Portfolio => portfolio_page(ui, &mut self.state),
+            Page::WorkHistory => work_history_page(ui, &mut self.state),
+            Page::Goals => goals_page(ui, &mut self.state),
+        }
+    }
+
+    fn tab_style_override(&self, _tab: &Self::Tab, global_style: &TabStyle) -> Option<TabStyle> {
+        let mut style = global_style.clone();
+        style.tab_body.inner_margin = 13.0.into();
+        Some(style)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Page {
+    Home,
+    Help,
+    Contact,
+
+    Skills,
+    Experience,
+    Portfolio,
+    WorkHistory,
+    Education,
+
+    Goals,
+}
+
+pub enum Request {
+    OpenPage(Page),
+}
+
+// ------------------------------------------------------------------------------------------------
+
+fn home_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "home",
+            |ui, state| {
+                egui::ScrollArea::vertical()
+                    .auto_shrink([false, false])
+                    .show(ui, |ui| {
+                        ui.style_mut().spacing.item_spacing = egui::vec2(3.0, 7.0);
+                        ui.heading("Welcome!");
+                        ui.weak("This is the personal website of Matthew Norman.");
+                        ui.horizontal_wrapped(|ui| {
+                            ui.style_mut().spacing.item_spacing = egui::vec2(1.0, 0.0);
+                            ui.label("If this is your first time visiting, I'd suggest you visit the ");
+                            if ui.link("Help page").clicked() {
+                                state.requests.push(Request::OpenPage(Page::Help));
+                            }
+                            ui.label(" for a quick guide on how this website works and a short overview of the design.");
+                        });
+                        ui.separator();
+                        ui.heading("Explore");
+                        ui.add_space(19.0);
+                        tree_item(ui, state, Page::Help, "Help", 0);
+                        // tree_item(ui, state, Page::HelpNavigation, "Navigation Guide", 1);
+                        tree_item(ui, state, Page::Contact, "Contact", 0);
+                        tree_item(ui, state, Page::Skills, "Skills", 0);
+                        tree_item(ui, state, Page::Experience, "Experience", 0);
+                        tree_item(ui, state, Page::Portfolio, "Portfolio", 1);
+                        // tree_item(ui, state, Page::ProjectHarbor, "Project Harbor", 2);
+                        // tree_item(ui, state, Page::ProjectSwamp, "Project Swamp", 2);
+                        tree_item(ui, state, Page::WorkHistory, "Work History", 1);
+                        tree_item(ui, state, Page::WorkHistory, "IT Intern", 2);
+                        tree_item(ui, state, Page::WorkHistory, "System Analyst I", 2);
+                        tree_item(ui, state, Page::Education, "Education", 0);
+                        tree_item(ui, state, Page::Goals, "Goals", 0);
+                        ui.add_space(19.0);
+                        ui.weak("Last Updated: 6/20/2024")
+                    });
+            },
+            |ui, _state| {
+                ui.heading("Home");
+            },
+            |ui, state| {
+                if ui.link("Help").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Help));
+                }
+                if ui.link("Contact").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Contact));
+                }
+            },
+    );
+}
+
+fn help_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "help",
+            |ui, _state| {
                 ui.style_mut().spacing.item_spacing = egui::vec2(3.0, 7.0);
                 ui.weak("✱ Try clicking and dragging pages around!");
-                ui.collapsing(egui::RichText::new("Navigation").heading(), |ui| {
+                ui.add_space(19.0);
+                ui.group(|ui| {
+                    ui.heading("Navigation");
+                    ui.separator();
                     ui.label("You can click and drag tab title bars to reorient them. Try to drag this page onto the Home page and take note of the popup that gives you the option to layout the pages in different ways.");
-                    ui.label("There are links highlighted all across pages on this site. They can take you to new pages which will provide more information. Kind of like Wikipedia.")
+                    ui.label("There are links highlighted all across pages on this site. They can take you to new pages which will provide more information. Kind of like Wikipedia.");
                 });
-                ui.collapsing(egui::RichText::new("Site Overview").heading(), |ui| {
+                ui.add_space(19.0);
+                ui.group(|ui| {
+                    ui.heading("Site Overview");
+                    ui.separator();
                     ui.label("This is a project to develop an interactive resume website for school (Florida State University) where I can show off my talents to potential employers.");
                     ui.label("This website is designed similarly to how I developed another project, a desktop application designed for organizing data/files. The idea is to present it similarly to how a desktop application designed for viewing/creating resumes would be presented.");
                 });
-            }
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Help");
+            },
+            |ui, state| {
+                if ui.link("Home").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                if ui.link("Contact").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Contact));
+                }
+            },
+    );
+}
 
-            Page::Home => {
-                ui.style_mut().spacing.item_spacing = egui::vec2(3.0, 7.0);
-                ui.heading("Welcome!");
-                ui.weak("This is the personal website of Matthew Norman.");
-                ui.separator();
-                ui.horizontal_wrapped(|ui| {
-                    ui.style_mut().spacing.item_spacing = egui::vec2(1.0, 0.0);
-                    ui.label("If this is your first time visiting, I'd suggest you visit the ");
-                    if ui.link("Help page").clicked() {
-                        self.requests.push(Request::OpenPage(Page::Help));
-                    }
-                    ui.label(" for a quick guide on how this website works and a short overview of the design.");
-                });
-                ui.separator();
-                ui.heading("Main Pages:");
-                if ui.link("Skills").clicked() {
-                    self.requests.push(Request::OpenPage(Page::Skills));
-                }
-                if ui.link("Portfolio").clicked() {
-                    self.requests.push(Request::OpenPage(Page::Portfolio));
-                }
-                if ui.link("Education").clicked() {
-                    self.requests.push(Request::OpenPage(Page::Education));
-                }
-                if ui.link("Work History").clicked() {
-                    self.requests.push(Request::OpenPage(Page::WorkHistory));
-                }
-                if ui.link("Career Goals").clicked() {
-                    self.requests.push(Request::OpenPage(Page::Goals));
-                }
-            }
-            Page::Contact => {
+fn contact_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "contact",
+            |ui, _state| {
                 ui.style_mut().spacing.item_spacing = egui::vec2(7.0, 7.0);
                 ui.heading("Matthew Norman");
                 ui.separator();
                 // ui.label("📞 (850) 555-5555");
-                ui.label("📧 mmn23a@fsu.edu");
+                ui.horizontal_wrapped(|ui| {
+                    ui.strong("Email:");
+                    ui.label("mm@email.com");
+                });
                 ui.hyperlink_to(" GitHub", "https://www.github.com/mmnorm");
                 ui.hyperlink_to(" LinkedIn", "https://www.linkedin.com/in/matthew-norman-67b10025a/");
-            }
-            Page::Skills => {
-                ui.style_mut().spacing.item_spacing = egui::vec2(3.0, 11.0);
-                ui.horizontal(|ui| {
-                    ui.visuals_mut().button_frame = false;
-                    if ui.button("Home").clicked() {
-                        self.requests.push(Request::OpenPage(Page::Home));
-                    }
-                    ui.weak(">");
-                    ui.label("Skills");
-                });
-                ui.separator();
-                ui.collapsing("Programming", |ui| {
-                    ui.label("I am proficient in Rust, Python, and C. However, my primary language for the past couple years has been Rust. I would consider my programming skills to be well above average.");
-                    ui.separator();
-                    ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        ui.separator();
-                        if ui.link("Portfolio").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Portfolio));
-                        }
-                    });
-                }).header_response.on_hover_cursor(egui::CursorIcon::PointingHand);
-                ui.collapsing("System Administration", |ui| {
-                    ui.label("I've been using Linux full time for about a year now. I have extensive experience in low-level system management and am extremely familiar with the terminal.");
-                    ui.separator();
-                    ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        ui.separator();
-                        if ui.link("Work History").clicked() {
-                            self.requests.push(Request::OpenPage(Page::WorkHistory));
-                        }
-                    });
-                }).header_response.on_hover_cursor(egui::CursorIcon::PointingHand);
-                ui.collapsing("System Design", |ui| {
-                    ui.label("I've developed and maintained several large-scale and small-scale projects that relied on effective information architecture and design. Organization is one of my strongest attributes. I am an excellent critical thinker capable of planning complex systems on my own.");
-                    ui.separator();
-                    ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        ui.separator();
-                        if ui.link("Portfolio").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Portfolio));
-                        }
-                        ui.separator();
-                        if ui.link("Work History").clicked() {
-                            self.requests.push(Request::OpenPage(Page::WorkHistory));
-                        }
-                    });
-                }).header_response.on_hover_cursor(egui::CursorIcon::PointingHand);
-                egui::TopBottomPanel::bottom("skills-bottom").show_inside(ui, |ui| {
-                    ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        if ui.link("Portfolio").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Portfolio));
-                        }
-                        ui.separator();
-                        if ui.link("Education").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Education));
-                        }
-                    });
-                });
-            }
-            Page::Education => {
-                ui.horizontal(|ui| {
-                    ui.visuals_mut().button_frame = false;
-                    if ui.button("Home").clicked() {
-                        self.requests.push(Request::OpenPage(Page::Home));
-                    }
-                    ui.weak(">");
-                    ui.label("Education");
-                });
-                ui.separator();
-                ui.heading("Florida State University");
-                ui.horizontal(|ui| {
-                    ui.label("Bachelor of Science in Information Technology");
-                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.label("Expected 2025");
-                    });
-                });
-                ui.horizontal_wrapped(|ui| {
-                    ui.weak("GPA:");
-                    ui.label("3.99");
-                });
-                egui::TopBottomPanel::bottom("education-bottom").show_inside(ui, |ui| {
-                    ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        if ui.link("Work History").clicked() {
-                            self.requests.push(Request::OpenPage(Page::WorkHistory));
-                        }
-                        ui.separator();
-                        if ui.link("Portfolio").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Portfolio));
-                        }
-                    });
-                });
-            }
-            Page::Portfolio => {
-                ui.horizontal(|ui| {
-                    ui.label("Home");
-                    ui.weak(">");
-                    ui.label("Portfolio");
-                });
-                ui.separator();
-                ui.heading("COMING SOON");
-                ui.label("...");
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Matthew");
+            },
+            |ui, state| {
+                if ui.link("Help").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Help));
+                }
+            },
+    );
+}
 
-                egui::TopBottomPanel::bottom("portfolio-bottom").show_inside(ui, |ui| {
+fn skills_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "skills",
+            |ui, _state| {
+                ui.group(|ui| {
+                    ui.heading("Programming");
+                    ui.separator();
+                    ui.label("I am proficient in Rust, Python, and C. Howver, my primary language for the past couple years has been Rust. In fact, this whole website is written in Rust and complied to Web Assembly. I would consider my programming skills to be well above average for my age/peers.");
+                });
+                ui.add_space(19.0);
+                ui.group(|ui| {
+                    ui.heading("System Administration");
+                    ui.separator();
+                    ui.label("I've been using Linux full-time for about a year now. I have extensive experience in low-level system administration and am extremely familiar with a terminal environment. I'd say I'm more comfortable working with Linux than I am with Windows now.");
+                });
+                ui.add_space(19.0);
+                ui.group(|ui| {
+                    ui.heading("System Design");
+                    ui.separator();
+                    ui.label("I've developed and maintained several large-scale and small-scale projects that rely on effective information architecture and design. Organization is one of my strongest attributes. I am an excellent critical thinker and capable of planning complex systems without oversight.");
+                });
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Skills");
+            },
+            |ui, state| {
+                if ui.link("Experience").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Experience));
+                }
+            },
+    );
+}
+
+fn experience_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "experience",
+            |ui, state| {
+                ui.horizontal_wrapped(|ui| {
+                    ui.style_mut().spacing.item_spacing = egui::vec2(0.0, 0.0);
+                    ui.label("I would divide my current level of experience into two categories: ");
+                    if ui.link("my personal/side projects").clicked() {
+                        state.requests.push(Request::OpenPage(Page::Portfolio));
+                    }
+                    ui.label(", and ");
+                    if ui.link("my employment experience").clicked() {
+                        state.requests.push(Request::OpenPage(Page::WorkHistory));
+                    }
+                    ui.label(".");
+                });
+                ui.add_space(19.0);
+                ui.group(|ui| {
+                    ui.style_mut().spacing.item_spacing = egui::vec2(0.0, 0.0);
+                    let heading = egui::RichText::new("Personal Projects").heading();
+                    if ui.link(heading).clicked() {
+                        state.requests.push(Request::OpenPage(Page::WorkHistory));
+                    }
+                    ui.separator();
                     ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        if ui.link("Skills").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Skills));
+                        ui.label("As mentioned in ");
+                        if ui.link("my Goals Page").clicked() {
+                            state.requests.push(Request::OpenPage(Page::Goals));
                         }
-                        ui.separator();
-                        if ui.link("Education").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Education));
-                        }
+                        ui.label(", I am quite independently motivated. My personal projects hep feed my passion for computing in all forms and I'm quite proud of my choice to use my free time toward them these past few years.");
                     });
                 });
-            }
-            Page::WorkHistory => {
-                ui.horizontal(|ui| {
-                    ui.label("Home");
-                    ui.weak(">");
-                    ui.label("Work History");
+                ui.add_space(19.0);
+                ui.group(|ui| {
+                    let heading = egui::RichText::new("Employment History").heading();
+                    if ui.link(heading).clicked() {
+                        state.requests.push(Request::OpenPage(Page::WorkHistory));
+                    }
+                    ui.separator();
+                    ui.label("Nothing special here, just real-world experience that I have cited in this resume.");
                 });
-                ui.separator();
-                ui.heading("IT Intern");
-                ui.horizontal(|ui| {
-                    ui.label("Florida Fish and Wildlife Conservation Commission");
-                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Experience");
+            },
+            |ui, state| {
+                if ui.link("Skills").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Skills));
+                }
+                if ui.link("Portfolio").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Portfolio));
+                }
+                if ui.link("Work History").clicked() {
+                    state.requests.push(Request::OpenPage(Page::WorkHistory));
+                }
+            },
+    );
+}
+
+fn portfolio_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "portfolio",
+            |ui, state| {
+                page_object(ui, state, None, "COMING SOON", |ui, _state| {
+                    ui.label("...");
+                });
+                ui.add_space(19.0);
+                page_object(ui, state, None, "COMING SOON", |ui, _state| {
+                    ui.label("...");
+                });
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Portfolio");
+            },
+            |ui, state| {
+                if ui.link("Experience").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Experience));
+                }
+                if ui.link("Work History").clicked() {
+                    state.requests.push(Request::OpenPage(Page::WorkHistory));
+                }
+            },
+    );
+}
+
+fn work_history_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "work-history",
+            |ui, _state| {
+                ui.group(|ui| {
+                    ui.heading("IT Intern");
+                    ui.separator();
+                    ui.horizontal_wrapped(|ui| {
+                        ui.label("Florida Fish and Wildlife Conservation Commission (FWC)");
                         ui.label("Spring 2022 - Fall 2023");
                     });
-                });
-                ui.heading("Duties:");
-                ui.horizontal_wrapped(|ui| {
-                    ui.weak("◾");
-                    ui.label("Effectively maintained critical law enforcement IT infrastructure.");
-                });
-                ui.horizontal_wrapped(|ui| {
-                    ui.weak("◾");
-                    ui.label("Responded to IT-related concerns by internal staff.");
-                });
-                ui.horizontal_wrapped(|ui| {
-                    ui.weak("◾");
-                    ui.label("Acted and presented appropriately in a professional environment.");
-                });
-
-                egui::TopBottomPanel::bottom("work-bottom").show_inside(ui, |ui| {
+                    ui.add_space(13.0);
+                    ui.heading("Duties");
                     ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        if ui.link("Education").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Education));
-                        }
+                        ui.weak("◾");
+                        ui.label("Effectively maintained critical law enforcement IT infrastructure.");
+                    });
+                    ui.horizontal_wrapped(|ui| {
+                        ui.weak("◾");
+                        ui.label("Responded to internal IT-related concerns by staff.");
+                    });
+                    ui.horizontal_wrapped(|ui| {
+                        ui.weak("◾");
+                        ui.label("Acted and presented appropriately in a professional environment.");
                     });
                 });
-            }
-            Page::Goals => {
-                ui.horizontal(|ui| {
-                    ui.label("Home");
-                    ui.weak(">");
-                    ui.label("Goals");
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Work History");
+            },
+            |ui, state| {
+                if ui.link("Experience").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Experience));
+                }
+                if ui.link("Portfolio").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Portfolio));
+                }
+            },
+    );
+}
+
+fn education_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "education",
+            |ui, _state| {
+                ui.group(|ui| {
+                    ui.heading("Florida State University");
+                    ui.separator();
+                    ui.horizontal_wrapped(|ui| {
+                        ui.label("Bachelor of Science, Information Technology");
+                        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                            ui.label("Expected 2025");
+                        });
+                    });
+                    ui.horizontal_wrapped(|ui| {
+                        ui.weak("GPA:");
+                        ui.label("3.99");
+                    });
                 });
-                ui.separator();
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Education");
+            },
+            |ui, state| {
+                if ui.link("Experience").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Experience));
+                }
+                if ui.link("Portfolio").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Portfolio));
+                }
+            },
+    );
+}
+
+fn goals_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "goals",
+            |ui, _state| {
+                ui.group(|ui| {
+                    ui.heading("Independence");
+                    ui.separator();
+                    ui.label("...");
+                });
+                ui.add_space(19.0);
+                ui.group(|ui| {
+                    ui.heading("Systems Analyst");
+                    ui.separator();
+                    ui.label("...");
+                });
                 ui.heading("Career Goals");
                 ui.label("My ultimate goal is independence. I know that may not be what a potential employer is looking for, but it's true. I'd like to eventually see myself working full time on my own projects with little to no oversight.");
                 ui.label("I'm also genuinely interested in learning. I'd say that I am extremely self-motivated and capable of gaining an in-depth understanding of anything I find interesting. And just about anything an employer looking for an IT guy needs is something I find interesting.");
@@ -376,45 +549,98 @@ impl egui_dock::TabViewer for PageViewer {
                     ui.weak("◾");
                     ui.label("Work on exciting projects related to computing that I genuinely believe in.");
                 });
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Goals");
+            },
+            |ui, state| {
+                if ui.link("Skills").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Skills));
+                }
+                if ui.link("Portfolio").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Portfolio));
+                }
+            },
+    );
+}
 
-                egui::TopBottomPanel::bottom("goals-bottom").show_inside(ui, |ui| {
-                    ui.horizontal_wrapped(|ui| {
-                        ui.weak("Related:");
-                        if ui.link("Skills").clicked() {
-                            self.requests.push(Request::OpenPage(Page::Skills));
-                        }
-                    });
-                });
+// ------------------------------------------------------------------------------------------------
+
+fn page_ui(
+    ui: &mut egui::Ui,
+    state: &mut State,
+    name: &str,
+    content: impl FnOnce(&mut egui::Ui, &mut State),
+    header: impl FnOnce(&mut egui::Ui, &mut State),
+    footer: impl FnOnce(&mut egui::Ui, &mut State),
+) {
+    egui::TopBottomPanel::top(format!("{name}-header"))
+        .exact_height(43.0)
+        .show_inside(ui, |ui| {
+            ui.horizontal_wrapped(|ui| {
+                header(ui, state)
+            });
+        });
+    egui::TopBottomPanel::bottom(format!("{name}-footer"))
+        .exact_height(61.0)
+        .show_inside(ui, |ui| {
+            ui.horizontal_centered(|ui| {
+                ui.label("Related:");
+                footer(ui, state)
+            });
+        });
+    egui::CentralPanel::default()
+        .frame(egui::Frame::central_panel(&ui.ctx().style())
+            .inner_margin(13.0))
+        .show_inside(ui, |ui| {
+            egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
+                content(ui, state)
+            });
+        });
+}
+
+fn tree_item(ui: &mut egui::Ui, state: &mut State, page: Page, title: &str, level: usize) {
+    ui.add_sized(egui::vec2(ui.available_width(), 29.0), |ui: &mut egui::Ui| {
+        ui.horizontal_centered(|ui| {
+            for _ in 0..level {
+                ui.separator();
+                ui.add_space(ui.spacing().indent);
             }
-        }
-    }
-
-    fn tab_style_override(&self, _tab: &Self::Tab, global_style: &TabStyle) -> Option<TabStyle> {
-        let mut style = global_style.clone();
-        style.tab_body.inner_margin = 13.0.into();
-        Some(style)
-    }
+            ui.label("▪");
+            if ui.link(title).clicked() {
+                state.requests.push(Request::OpenPage(page));
+            }
+        }).response
+    });
 }
 
-// ------------------------------------------------------------------------------------------------
-
-#[derive(Clone, Copy, Default, Eq, PartialEq)]
-pub enum Page {
-    #[default]
-    Home,
-    Help,
-    Contact,
-    Skills,
-    Portfolio,
-    Education,
-    WorkHistory,
-    Goals,
-}
-
-// ------------------------------------------------------------------------------------------------
-
-pub enum Request {
-    OpenPage(Page),
+fn page_object(
+    ui: &mut egui::Ui,
+    state: &mut State,
+    page: Option<Page>,
+    title: &str,
+    content: impl FnOnce(&mut egui::Ui, &mut State),
+) {
+    ui.group(|ui| {
+        ui.horizontal_wrapped(|ui| {
+            ui.visuals_mut().button_frame = false;
+            ui.heading(title);
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                let resp = ui.add_enabled(page.is_some(), egui::Button::new("Learn More"));
+                if resp.clicked() {
+                    if let Some(page) = page {
+                        state.requests.push(Request::OpenPage(page));
+                    }
+                }
+            });
+        });
+        ui.separator();
+        content(ui, state)
+    });
 }
 
 // ------------------------------------------------------------------------------------------------
