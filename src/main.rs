@@ -302,7 +302,7 @@ fn contact_page(ui: &mut egui::Ui, state: &mut State) {
                 if ui.button("🏠").clicked() {
                     state.requests.push(Request::OpenPage(Page::Home));
                 }
-                ui.heading("Matthew");
+                ui.heading("Contact Information");
             },
             |ui, state| {
                 if ui.link("Help").clicked() {
