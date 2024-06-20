@@ -224,7 +224,7 @@ fn home_page(ui: &mut egui::Ui, state: &mut State) {
                         tree_item(ui, state, Page::Experience, "Experience", 0);
                         tree_item(ui, state, Page::Portfolio, "Portfolio", 1);
                         tree_item(ui, state, Page::WorkHistory, "Work History", 1);
-                        tree_item(ui, state, Page::WorkHistory, "IT Intern", 2);
+                        // tree_item(ui, state, Page::WorkHistory, "IT Intern", 2);
                         tree_item(ui, state, Page::Education, "Education", 0);
                         tree_item(ui, state, Page::Goals, "Goals", 0);
                         ui.add_space(19.0);
@@ -447,7 +447,9 @@ fn work_history_page(ui: &mut egui::Ui, state: &mut State) {
                     ui.separator();
                     ui.horizontal_wrapped(|ui| {
                         ui.label("Florida Fish and Wildlife Conservation Commission (FWC)");
-                        ui.label("Spring 2022 - Fall 2023");
+                        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                            ui.label("Spring 2022 - Fall 2023");
+                        });
                     });
                     ui.add_space(13.0);
                     ui.heading("Duties");
