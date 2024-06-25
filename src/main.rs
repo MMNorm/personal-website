@@ -217,6 +217,7 @@ fn home_page(ui: &mut egui::Ui, state: &mut State) {
                         ui.style_mut().spacing.item_spacing = egui::vec2(3.0, 7.0);
                         ui.heading("Welcome!");
                         ui.weak("This is the personal website of Matthew Norman.");
+                        ui.strong("The blue text pieces are internal links to pages, and you can click and drag tabs to rearrange them.");
                         ui.horizontal_wrapped(|ui| {
                             ui.style_mut().spacing.item_spacing = egui::vec2(1.0, 0.0);
                             ui.label("If this is your first time visiting, I'd suggest you visit the ");
@@ -425,16 +426,18 @@ fn portfolio_page(ui: &mut egui::Ui, state: &mut State) {
     page_ui(ui, state, "portfolio",
             |ui, state| {
                 page_object(ui, state, Some(Page::Project1), "Markdown Editor", |ui, _state| {
+                    ui.label("A markdown editor in the same vein as modern note-taking applications.");
                     ui.weak("Click `Learn More` for details");
                 });
                 ui.add_space(19.0);
                 page_object(ui, state, Some(Page::Project2), "Modular Programming Model", |ui, _state| {
+                    ui.label("A programming model for building extremely scalable applications without oversight.");
                     ui.weak("Click `Learn More` for details");
                 });
-                ui.add_space(19.0);
-                page_object(ui, state, Some(Page::Project3), "EEV Data Model", |ui, _state| {
-                    ui.weak("Click `Learn More` for details");
-                });
+                // ui.add_space(19.0);
+                // page_object(ui, state, Some(Page::Project3), "EEV Data Model", |ui, _state| {
+                //     ui.weak("Click `Learn More` for details");
+                // });
             },
             |ui, state| {
                 ui.visuals_mut().button_frame = false;
@@ -459,7 +462,7 @@ fn project_1_page(ui: &mut egui::Ui, state: &mut State) {
             |ui, state| {
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Role:");
-                    ui.label("Developer");
+                    ui.label("Developer; the sole programmer, designer, and maintainer of the project.");
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Status:");
@@ -467,7 +470,7 @@ fn project_1_page(ui: &mut egui::Ui, state: &mut State) {
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Overview:");
-                    ui.label("A simple markdown editor primarily designed for usage in Linux.");
+                    ui.label("A simple markdown editor primarily designed for usage in Linux. It was built to run very quickly, even on older computers. The design is very similar to some popular note-taking applications with links, preview support, and customization capability.");
                 });
                 ui.add_space(19.0);
                 ui.heading("Showcase:");
@@ -478,12 +481,13 @@ fn project_1_page(ui: &mut egui::Ui, state: &mut State) {
                         .rounding(11.0))
                         .on_hover_text("Markdown editor preview mode showcase");
                     ui.weak("Editor preview mode example.");
-                    ui.add(egui::Image::new(
-                        "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p1_b.png"
-                    )
-                        .rounding(11.0))
-                        .on_hover_text("Markdown editor editing mode showcase");
-                    ui.weak("Editor editing mode example.");
+                    ui.hyperlink_to("Click here to view a full-size version of the image", "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p1_a.png");
+                    // ui.add(egui::Image::new(
+                    //     "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p1_b.png"
+                    // )
+                    //     .rounding(11.0))
+                    //     .on_hover_text("Markdown editor editing mode showcase");
+                    // ui.weak("Editor editing mode example.");
                 });
             },
             |ui, state| {
@@ -509,11 +513,11 @@ fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
             |ui, state| {
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Role:");
-                    ui.label("Designer");
+                    ui.label("Designer; the model's creator.");
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Status:");
-                    ui.colored_label(egui::Color32::LIGHT_YELLOW, "UNDER REVIEW");
+                    ui.colored_label(egui::Color32::YELLOW, "UNDER REVIEW");
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Overview:");
@@ -521,12 +525,15 @@ fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
                 });
                 ui.add_space(19.0);
                 ui.heading("Showcase:");
-                ui.add(egui::Image::new(
-                    "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p2_a.png"
-                )
-                    .rounding(11.0))
-                    .on_hover_text("Chart for program development model");
-                ui.weak("Program development model chart.");
+                ui.vertical_centered(|ui| {
+                    ui.add(egui::Image::new(
+                        "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p2_a.png"
+                    )
+                        .rounding(11.0))
+                        .on_hover_text("Chart for the program development model");
+                    ui.weak("Program development model chart.");
+                    ui.hyperlink_to("Click here to view a full-size version of the image", "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p2_a.png");
+                });
             },
             |ui, state| {
                 ui.visuals_mut().button_frame = false;
@@ -547,7 +554,7 @@ fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
 }
 
 fn project_3_page(ui: &mut egui::Ui, state: &mut State) {
-    page_ui(ui, state, "project2",
+    page_ui(ui, state, "project3",
             |ui, state| {
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Role:");
@@ -555,13 +562,14 @@ fn project_3_page(ui: &mut egui::Ui, state: &mut State) {
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Status:");
-                    ui.colored_label(egui::Color32::LIGHT_YELLOW, "UNDER REVIEW");
+                    ui.colored_label(egui::Color32::YELLOW, "UNDER REVIEW");
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Overview:");
-                    ui.label("A data model designed to mitigate the limitations of using heterogenous data with the traditional EAV data model.");
+                    ui.label("A data model designed to mitigate the limitations of using heterogeneous data with the traditional EAV data model.");
                 });
                 ui.add_space(19.0);
+                ui.heading("COMING SOON");
             },
             |ui, state| {
                 ui.visuals_mut().button_frame = false;
@@ -760,7 +768,7 @@ fn page_object(
             ui.visuals_mut().button_frame = false;
             ui.heading(title);
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                let resp = ui.add_enabled(page.is_some(), egui::Button::new("Learn More"));
+                let resp = ui.add_enabled(page.is_some(), egui::Link::new("Learn More"));
                 if resp.clicked() {
                     if let Some(page) = page {
                         state.requests.push(Request::OpenPage(page));
