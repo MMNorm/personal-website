@@ -11,7 +11,8 @@ eframe = { version = "0.27.2", default-features = false, features = [
     "glow",          # Use the glow rendering backend. Alternative: "wgpu".
 ] }
 egui_dock = "0.12.0"
-egui_extras = "0.27.2"
+egui_extras = { version = "0.27.2", features = ["all_loaders"] }
+image = { version = "0.24.9", features = ["gif", "jpeg", "png"] }
 log = "0.4"
 
 # web:

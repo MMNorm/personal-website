@@ -84,7 +84,7 @@ impl eframe::App for Resume {
 impl Resume {
     pub fn new(cc: &eframe::CreationContext) -> Self {
         use egui::{FontFamily::*, FontId, TextStyle};
-
+        egui_extras::install_image_loaders(&cc.egui_ctx);
         // let mut fonts = egui::FontDefinitions::default();
         // fonts.font_data.insert(
         //     "JetBrainsMono Regular".to_owned(),
@@ -150,6 +150,10 @@ impl egui_dock::TabViewer for PageViewer {
             Page::Education => "Education".into(),
             Page::WorkHistory => "Work History".into(),
             Page::Goals => "Goals".into(),
+
+            Page::Project1 => "Markdown Editor".into(),
+            Page::Project2 => "Modular Programming Model".into(),
+            Page::Project3 => "EEV Data Model".into(),
         }
     }
     
@@ -165,6 +169,10 @@ impl egui_dock::TabViewer for PageViewer {
             Page::Portfolio => portfolio_page(ui, &mut self.state),
             Page::WorkHistory => work_history_page(ui, &mut self.state),
             Page::Goals => goals_page(ui, &mut self.state),
+
+            Page::Project1 => project_1_page(ui, &mut self.state),
+            Page::Project2 => project_2_page(ui, &mut self.state),
+            Page::Project3 => project_3_page(ui, &mut self.state),
         }
     }
 
@@ -188,6 +196,10 @@ pub enum Page {
     Education,
 
     Goals,
+
+    Project1,
+    Project2,
+    Project3,
 }
 
 pub enum Request {
@@ -412,12 +424,16 @@ fn experience_page(ui: &mut egui::Ui, state: &mut State) {
 fn portfolio_page(ui: &mut egui::Ui, state: &mut State) {
     page_ui(ui, state, "portfolio",
             |ui, state| {
-                page_object(ui, state, None, "COMING SOON", |ui, _state| {
-                    ui.label("...");
+                page_object(ui, state, Some(Page::Project1), "Markdown Editor", |ui, _state| {
+                    ui.weak("Click `Learn More` for details");
                 });
                 ui.add_space(19.0);
-                page_object(ui, state, None, "COMING SOON", |ui, _state| {
-                    ui.label("...");
+                page_object(ui, state, Some(Page::Project2), "Modular Programming Model", |ui, _state| {
+                    ui.weak("Click `Learn More` for details");
+                });
+                ui.add_space(19.0);
+                page_object(ui, state, Some(Page::Project3), "EEV Data Model", |ui, _state| {
+                    ui.weak("Click `Learn More` for details");
                 });
             },
             |ui, state| {
@@ -433,6 +449,133 @@ fn portfolio_page(ui: &mut egui::Ui, state: &mut State) {
                 }
                 if ui.link("Work History").clicked() {
                     state.requests.push(Request::OpenPage(Page::WorkHistory));
+                }
+            },
+    );
+}
+
+fn project_1_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "project1",
+            |ui, state| {
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Role:");
+                    ui.label("Developer");
+                });
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Status:");
+                    ui.colored_label(egui::Color32::LIGHT_GREEN, "IN PROGRESS");
+                });
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Overview:");
+                    ui.label("A simple markdown editor primarily designed for usage in Linux.");
+                });
+                ui.add_space(19.0);
+                ui.heading("Showcase:");
+                ui.vertical_centered(|ui| {
+                    ui.add(egui::Image::new(
+                        "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p1_a.png"
+                    )
+                        .rounding(11.0))
+                        .on_hover_text("Markdown editor preview mode showcase");
+                    ui.weak("Editor preview mode example.");
+                    ui.add(egui::Image::new(
+                        "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p1_b.png"
+                    )
+                        .rounding(11.0))
+                        .on_hover_text("Markdown editor editing mode showcase");
+                    ui.weak("Editor editing mode example.");
+                });
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Markdown Editor");
+            },
+            |ui, state| {
+                if ui.link("Portfolio").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Portfolio));
+                }
+                if ui.link("Skills").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Skills));
+                }
+            },
+    );
+}
+
+fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "project2",
+            |ui, state| {
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Role:");
+                    ui.label("Designer");
+                });
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Status:");
+                    ui.colored_label(egui::Color32::LIGHT_YELLOW, "UNDER REVIEW");
+                });
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Overview:");
+                    ui.label("A set of guidelines for program development. The goal was to design a heuristic for developing programs that are small in size, but extremely modular.");
+                });
+                ui.add_space(19.0);
+                ui.heading("Showcase:");
+                ui.add(egui::Image::new(
+                    "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/p2_a.png"
+                )
+                    .rounding(11.0))
+                    .on_hover_text("Chart for program development model");
+                ui.weak("Program development model chart.");
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("Modular Programming Model");
+            },
+            |ui, state| {
+                if ui.link("Portfolio").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Portfolio));
+                }
+                if ui.link("Skills").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Skills));
+                }
+            },
+    );
+}
+
+fn project_3_page(ui: &mut egui::Ui, state: &mut State) {
+    page_ui(ui, state, "project2",
+            |ui, state| {
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Role:");
+                    ui.label("Creator");
+                });
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Status:");
+                    ui.colored_label(egui::Color32::LIGHT_YELLOW, "UNDER REVIEW");
+                });
+                ui.horizontal_wrapped(|ui| {
+                    ui.weak("Overview:");
+                    ui.label("A data model designed to mitigate the limitations of using heterogenous data with the traditional EAV data model.");
+                });
+                ui.add_space(19.0);
+            },
+            |ui, state| {
+                ui.visuals_mut().button_frame = false;
+                if ui.button("🏠").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Home));
+                }
+                ui.heading("EEV Data Model");
+            },
+            |ui, state| {
+                if ui.link("Portfolio").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Portfolio));
+                }
+                if ui.link("Skills").clicked() {
+                    state.requests.push(Request::OpenPage(Page::Skills));
                 }
             },
     );
