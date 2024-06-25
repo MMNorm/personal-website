@@ -380,7 +380,7 @@ fn experience_page(ui: &mut egui::Ui, state: &mut State) {
                     ui.style_mut().spacing.item_spacing = egui::vec2(0.0, 0.0);
                     let heading = egui::RichText::new("Personal Projects").heading();
                     if ui.link(heading).clicked() {
-                        state.requests.push(Request::OpenPage(Page::WorkHistory));
+                        state.requests.push(Request::OpenPage(Page::Portfolio));
                     }
                     ui.separator();
                     ui.horizontal_wrapped(|ui| {
@@ -513,7 +513,7 @@ fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
             |ui, _state| {
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Role:");
-                    ui.label("Designer; the model's creator.");
+                    ui.label("Designer; the model's creator. This project was part of a larger programming project's design phase and I served as the lead.");
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Status:");
@@ -521,7 +521,7 @@ fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
                 });
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Overview:");
-                    ui.label("A set of guidelines for program development. The goal was to design a heuristic for developing programs that are small in size, but extremely modular.");
+                    ui.label("A set of guidelines for program development. The goal was to design a general heuristic for developing programs that are small in size, but extremely modular. These programs would then, in turn, be scalable to indefinite proportions.");
                 });
                 ui.add_space(19.0);
                 ui.heading("Showcase:");
