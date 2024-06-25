@@ -330,7 +330,7 @@ fn skills_page(ui: &mut egui::Ui, state: &mut State) {
                 ui.group(|ui| {
                     ui.heading("Programming");
                     ui.separator();
-                    ui.label("I am proficient in Rust, Python, and C. Howver, my primary language for the past couple years has been Rust. In fact, this whole website is written in Rust and complied to Web Assembly. I would consider my programming skills to be well above average for my age/peers.");
+                    ui.label("I am proficient in Rust, Python, and C. However, my primary language for the past couple years has been Rust. In fact, this whole website is written in Rust and complied to Web Assembly. I would consider my programming skills to be well above average for my age/peers.");
                 });
                 ui.add_space(19.0);
                 ui.group(|ui| {
@@ -459,7 +459,7 @@ fn portfolio_page(ui: &mut egui::Ui, state: &mut State) {
 
 fn project_1_page(ui: &mut egui::Ui, state: &mut State) {
     page_ui(ui, state, "project1",
-            |ui, state| {
+            |ui, _state| {
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Role:");
                     ui.label("Developer; the sole programmer, designer, and maintainer of the project.");
@@ -510,7 +510,7 @@ fn project_1_page(ui: &mut egui::Ui, state: &mut State) {
 
 fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
     page_ui(ui, state, "project2",
-            |ui, state| {
+            |ui, _state| {
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Role:");
                     ui.label("Designer; the model's creator.");
@@ -555,7 +555,7 @@ fn project_2_page(ui: &mut egui::Ui, state: &mut State) {
 
 fn project_3_page(ui: &mut egui::Ui, state: &mut State) {
     page_ui(ui, state, "project3",
-            |ui, state| {
+            |ui, _state| {
                 ui.horizontal_wrapped(|ui| {
                     ui.weak("Role:");
                     ui.label("Creator");
