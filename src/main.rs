@@ -308,6 +308,13 @@ fn contact_page(ui: &mut egui::Ui, state: &mut State) {
                 });
                 ui.hyperlink_to(" GitHub", "https://www.github.com/mmnorm");
                 ui.hyperlink_to(" LinkedIn", "https://www.linkedin.com/in/matthew-norman-67b10025a/");
+                ui.separator();
+
+                ui.add(egui::Image::new(
+                    "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/headshot.jpg"
+                ).shrink_to_fit())// .rotate(-std::f32::consts::FRAC_PI_2, egui::Vec2::splat(0.5)))
+
+                    .on_hover_text("This is a photo of me. Trust me, I look way better in person.");
             },
             |ui, state| {
                 ui.visuals_mut().button_frame = false;
