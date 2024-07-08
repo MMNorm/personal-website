@@ -311,8 +311,8 @@ fn contact_page(ui: &mut egui::Ui, state: &mut State) {
                 ui.separator();
 
                 ui.add(egui::Image::new(
-                    "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/headshot.jpg"
-                ).rounding(11.0))// .rotate(-std::f32::consts::FRAC_PI_2, egui::Vec2::splat(0.5)))
+                    "https://raw.githubusercontent.com/MMNorm/personal-website/master/assets/headshot2.jpg"
+                ).rounding(11.0))
 
                     .on_hover_text("This is a photo of me. Trust me, I look way better in person.");
             },
