@@ -59,6 +59,12 @@ impl eframe::App for Resume {
                 if ui.button("Contact").on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
                     self.viewer.state.requests.push(Request::OpenPage(Page::Contact));
                 }
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    let visuals = ui.visuals().clone();
+                    if let Some(new_visuals) = visuals.light_dark_small_toggle_button(ui) {
+                        ui.ctx().set_visuals(new_visuals);
+                    }
+                });
             });
         });
         egui_dock::DockArea::new(&mut self.pages)
@@ -217,7 +223,7 @@ fn home_page(ui: &mut egui::Ui, state: &mut State) {
                         ui.style_mut().spacing.item_spacing = egui::vec2(3.0, 7.0);
                         ui.heading("Welcome!");
                         ui.weak("This is the personal website of Matthew Norman.");
-                        ui.strong("The blue text pieces are internal links to pages, and you can click and drag tabs to rearrange them.");
+                        ui.strong("The blue text pieces are internal links to pages, and you can click and drag tabs to rearrange them. You can click the button in the upper left to change the theme.");
                         ui.horizontal_wrapped(|ui| {
                             ui.style_mut().spacing.item_spacing = egui::vec2(1.0, 0.0);
                             ui.label("If this is your first time visiting, I'd suggest you visit the ");
